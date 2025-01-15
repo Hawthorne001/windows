@@ -37,6 +37,7 @@ services:
       VERSION: "11"
     devices:
       - /dev/kvm
+      - /dev/net/tun
     cap_add:
       - NET_ADMIN
     ports:
@@ -49,14 +50,24 @@ services:
 Via Docker CLI:
 
 ```bash
-docker run -it --rm -p 8006:8006 --device=/dev/kvm --cap-add NET_ADMIN --stop-timeout 120 dockurr/windows
+docker run -it --rm -p 8006:8006 --device=/dev/kvm --device=/dev/net/tun --cap-add NET_ADMIN --stop-timeout 120 dockurr/windows
 ```
 
 Via Kubernetes:
 
 ```shell
-kubectl apply -f kubernetes.yml
+kubectl apply -f https://raw.githubusercontent.com/dockur/windows/refs/heads/master/kubernetes.yml
 ```
+
+## Compatibility ⚙️
+
+| **Product**  | **Platform**   | |
+|---|---|---|
+| Docker Engine | Linux| ✅ |
+| Docker Desktop | Linux | ❌ |
+| Docker Desktop | macOS | ❌ |
+| Docker Desktop | Windows 11 | ✅ |
+| Docker Desktop | Windows 10 | ❌ |
 
 ## FAQ 💬
 
@@ -74,7 +85,7 @@ kubectl apply -f kubernetes.yml
 
 ### How do I select the Windows version?
 
-  By default, Windows 11 will be installed. But you can add the `VERSION` environment variable to your compose file, in order to specify an alternative Windows version to be downloaded:
+  By default, Windows 11 Pro will be installed. But you can add the `VERSION` environment variable to your compose file, in order to specify an alternative Windows version to be downloaded:
 
   ```yaml
   environment:
@@ -93,7 +104,6 @@ kubectl apply -f kubernetes.yml
   | `10l`  | Windows 10 LTSC          | 4.6 GB   |
   | `10e`  | Windows 10 Enterprise    | 5.2 GB   |
   ||||
-  | `8`    | Windows 8.1 Pro          | 4.0 GB   |
   | `8e`   | Windows 8.1 Enterprise   | 3.7 GB   |
   | `7e`   | Windows 7 Enterprise     | 3.0 GB   |
   | `ve`   | Windows Vista Enterprise | 3.0 GB   |
@@ -167,7 +177,9 @@ kubectl apply -f kubernetes.yml
 
 ### How do I run a script after installation?
 
-  To run your own script after installation, you can create a file called `install.bat` and place it in a folder together with any additional files it needs (software to be installed for example). Then bind that folder in your compose file like this:
+  To run your own script after installation, you can create a file called `install.bat` and place it in a folder together with any additional files it needs (software to be installed for example).
+  
+  Then bind that folder in your compose file like this:
 
   ```yaml
   volumes:
@@ -361,7 +373,7 @@ kubectl apply -f kubernetes.yml
 
   - you are not using "Docker Desktop for Linux" as it does not support KVM, instead make use of Docker Engine directly.
  
-  - it could help to add `privileged: true` to your compose file (or `sudo` to your `run` command), to rule out any permission issue.
+  - it could help to add `privileged: true` to your compose file (or `sudo` to your `docker run` command), to rule out any permission issue.
 
 ### How do I run macOS in a container?
 
